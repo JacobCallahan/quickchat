@@ -13,7 +13,7 @@
         </style>
         <script src="static/jquery-3.3.1.min.js"> </script>
         <script>
-            $('messages').scrollTop(0);
+            // $('messages').scrollTop($('messages').scrollHeight);
 
             $(document).on("keypress", "input", function(e){
                 if(e.which == 13){
@@ -26,12 +26,11 @@
                         // data: $('form').serialize(),
                         type: 'POST',
                         success: function(response) {
-                            console.log(response);
                             $('#message').val("");
                         },
                         error: function(error) {
                             console.log(error);
-                            $('#message').val(error);
+                            $('#message').val("Oh snap! Something broke.. Check that console.");
                         }
                     });
                     $('#message').val("");
@@ -54,6 +53,8 @@
                 var messages_dom = document.getElementsByClassName('messages')[0];
                 messages_dom.appendChild(sender_dom);
                 messages_dom.appendChild(message_dom);
+                console.log()
+                messages_dom.scrollTop = messages_dom.scrollHeight;
             };
         </script>
     </head>
