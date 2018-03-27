@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <title>Quick, Disposable, Private Chat</title>
+        <style>
+            .messages {width:100%; height:90%; clear: both; overflow-y: scroll; overflow-x: hidden;}
+            .sender {width:150px; left: 0px; text-align: right; float: left; font-weight: bold;}
+            .message {width:90%; text-align: left; float: left; padding-left: 5px;}
+            .form {width: 100%; bottom: 0px; height: 50px; clear: both;}
+            .name-box {width: 150px; height: 100%; float: left; font-weight: bold;}
+            .message-box {width: 90%; height: 100%; float: left;}
+            .submit-box {width: 10%; height: 100%; float: left; display: none;}
+            .control {width: 100%; height: 100%;}
+        </style>
+        <script src="static/jquery-3.3.1.min.js"> </script>
+        <script>
+            $('messages').scrollTop(0);
+
+            $(document).on("keypress", "input", function(e){
+                if(e.which == 13){
+                    $(this).attr("disabled", "disabled");
+                    var sender = $('#sender').val();
+                    var message = $('#message').val();
+                    $.ajax({
+                        url: '/submit',
+                        data: {'sender': sender, 'message': message},
+                        // data: $('form').serialize(),
+                        type: 'POST',
+                        success: function(response) {
+                            console.log(response);
+                            $('#message').val("");
+                        },
+                        error: function(error) {
+                            console.log(error);
+                            $('#message').val(error);
+                        }
+                    });
+                    $('#message').val("");
+                    $(this).removeAttr("disabled");
+                    $('#message').focus();
+                }
+            });
+
+            var es = new EventSource('/stream');
+            es.onmessage = function (event) {
+                var response = JSON.parse(event.data);
+                var sender_dom = document.createElement('div');
+                sender_dom.innerHTML = response.sender + ":";
+                sender_dom.setAttribute('class', 'sender');
+
+                var message_dom = document.createElement('div');
+                message_dom.innerHTML = response.message;
+                message_dom.setAttribute('class', 'message');
+
+                var messages_dom = document.getElementsByClassName('messages')[0];
+                messages_dom.appendChild(sender_dom);
+                messages_dom.appendChild(message_dom);
+            };
+        </script>
+    </head>
+    <body>
+        <div class='messages'>
+        {% for chat in chats %}
+            <div class='sender'>{{ chat.sender }}:</div>
+            <div class='message'>{{ chat.message }}</div>
+        {% endfor %}
+        </div>
+        <div class='form'>
+            <form action="/" id="send" method="post">
+                <div class='name-box'>
+                    <input class="control" type="text" id="sender" placeholder="name" required>
+                </div>
+                <div class='message-box'>
+                    <input class="control" type="text" id="message" placeholder="message" required>
+                </div>
+                <div class='submit-box'>
+                    <button class="control" id="submitbutton" type="button">Submit</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
