@@ -43,11 +43,11 @@
             es.onmessage = function (event) {
                 var response = JSON.parse(event.data);
                 var sender_dom = document.createElement('div');
-                sender_dom.innerHTML = response.sender + ":";
+                sender_dom.innerText = response.sender + ":";
                 sender_dom.setAttribute('class', 'sender');
 
                 var message_dom = document.createElement('div');
-                message_dom.innerHTML = response.message;
+                message_dom.innerText = response.message;
                 message_dom.setAttribute('class', 'message');
 
                 var messages_dom = document.getElementsByClassName('messages')[0];
